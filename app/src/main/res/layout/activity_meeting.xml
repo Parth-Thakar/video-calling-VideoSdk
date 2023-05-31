@@ -41,6 +41,14 @@
         android:text="Leave"/>
 
     <Button
+        android:id="@+id/endRoom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        android:layout_marginHorizontal="8dp"
+        android:text="End"/>
+
+    <Button
         android:id="@+id/btnWebcam"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

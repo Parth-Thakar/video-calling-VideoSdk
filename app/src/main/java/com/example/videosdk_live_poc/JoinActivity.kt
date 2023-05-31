@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -35,12 +36,14 @@ class JoinActivity : AppCompatActivity() {
     btnCreate.setOnClickListener { v: View? ->
       createMeeting(sampleToken)
     }
+
     btnJoin.setOnClickListener { v: View? ->
       val intent = Intent(this@JoinActivity, MeetingActivity::class.java)
       intent.putExtra("token", sampleToken)
       intent.putExtra("meetingId", etMeetingId.text.toString())
       startActivity(intent)
     }
+
   }
 
 
@@ -48,18 +51,21 @@ class JoinActivity : AppCompatActivity() {
   private fun createMeeting(token: String) {
     // we will make an API call to VideoSDK Server to get a roomId
     AndroidNetworking.post("https://api.videosdk.live/v2/rooms")
-      .addHeaders("Authorization", token) //we will pass the token in the Headers
+      .addHeaders("Authorization", token)
+      .addBodyParameter("customRoomId","test123")
       .build()
       .getAsJSONObject(object : JSONObjectRequestListener {
         override fun onResponse(response: JSONObject) {
           try {
             // response will contain `roomId`
             val meetingId = response.getString("roomId")
-
+            val customId = response.getString("customRoomId")
+            Log.e("response",response.toString())
             // starting the MeetingActivity with received roomId and our sampleToken
             val intent = Intent(this@JoinActivity, MeetingActivity::class.java)
             intent.putExtra("token", sampleToken)
             intent.putExtra("meetingId", meetingId)
+            intent.putExtra("customId",customId)
             startActivity(intent)
           } catch (e: JSONException) {
             e.printStackTrace()
