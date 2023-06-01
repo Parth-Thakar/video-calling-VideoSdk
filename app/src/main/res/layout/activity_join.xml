@@ -38,4 +38,24 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:text="Join Meeting" />
+
+  <com.google.android.material.textfield.TextInputLayout
+      style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginVertical="16dp"
+      android:hint="Enter your Auth Token">
+
+    <EditText
+        android:id="@+id/gwTokenEdt"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content" />
+  </com.google.android.material.textfield.TextInputLayout>
+
+  <Button
+      android:id="@+id/btnSaveToken"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Save Token" />
+
 </LinearLayout>

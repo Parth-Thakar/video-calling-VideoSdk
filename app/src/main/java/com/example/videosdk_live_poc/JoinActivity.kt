@@ -20,7 +20,7 @@ import org.json.JSONObject
 class JoinActivity : AppCompatActivity() {
 
   //Replace with the token you generated from the VideoSDK Dashboard
-  private var sampleToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI5YzZjMGVhZi01NTliLTRiYzQtYTQ5MC1kMDZlYWVkMjFjNjYiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTY4NTUwMzM3NCwiZXhwIjoxNzAxMDU1Mzc0fQ.0vmY-Lc-_ddOCb-xvp5ubhE3G_oY5-2Lbw3vVXIuc8Q"
+  private var sampleToken  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI5YzZjMGVhZi01NTliLTRiYzQtYTQ5MC1kMDZlYWVkMjFjNjYiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTY4NTUwMzM3NCwiZXhwIjoxNzAxMDU1Mzc0fQ.0vmY-Lc-_ddOCb-xvp5ubhE3G_oY5-2Lbw3vVXIuc8Q"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -44,6 +44,14 @@ class JoinActivity : AppCompatActivity() {
       startActivity(intent)
     }
 
+    val saveToken : Button = findViewById(R.id.btnSaveToken)
+    val tokenEdt : EditText = findViewById(R.id.gwTokenEdt)
+
+    saveToken.setOnClickListener {
+      Toast.makeText(this,"Token Updated .....", Toast.LENGTH_SHORT).show()
+      sampleToken = tokenEdt.text.toString()
+    }
+
   }
 
 
@@ -52,20 +60,17 @@ class JoinActivity : AppCompatActivity() {
     // we will make an API call to VideoSDK Server to get a roomId
     AndroidNetworking.post("https://api.videosdk.live/v2/rooms")
       .addHeaders("Authorization", token)
-      .addBodyParameter("customRoomId","test123")
       .build()
       .getAsJSONObject(object : JSONObjectRequestListener {
         override fun onResponse(response: JSONObject) {
           try {
             // response will contain `roomId`
             val meetingId = response.getString("roomId")
-            val customId = response.getString("customRoomId")
             Log.e("response",response.toString())
             // starting the MeetingActivity with received roomId and our sampleToken
             val intent = Intent(this@JoinActivity, MeetingActivity::class.java)
             intent.putExtra("token", sampleToken)
             intent.putExtra("meetingId", meetingId)
-            intent.putExtra("customId",customId)
             startActivity(intent)
           } catch (e: JSONException) {
             e.printStackTrace()

@@ -38,16 +38,12 @@ class MeetingActivity : AppCompatActivity() {
     setContentView(R.layout.activity_meeting)
     token = intent.getStringExtra("token")
     val meetingId = intent.getStringExtra("meetingId")
-    val customId = intent.getStringExtra("customId")
     val participantName = "John Doe"
 
-    // 1. Configuration VideoSDK with Token
+        // 1. Configuration VideoSDK with Token
     VideoSDK.config(token)
 
-    getMeetingID(customId)
-
     // 2. Initialize VideoSDK Meeting
-
     try {
       meeting = VideoSDK.initMeeting(
         this@MeetingActivity, meetingId, participantName,
@@ -63,47 +59,15 @@ class MeetingActivity : AppCompatActivity() {
     //4. Join VideoSDK Meeting
     meeting!!.join()
 
-    (findViewById<View>(R.id.tvMeetingId) as TextView).text = customId
+    (findViewById<View>(R.id.tvMeetingId) as TextView).text = meetingId
     val endButton: Button = findViewById(R.id.endRoom)
 
 
 
     endButton.setOnClickListener {
       meeting!!.end()
-      AndroidNetworking.post("https://api.videosdk.live/v2/rooms/deactivate")
-        .addHeaders("Authorization", token)
-        .addBodyParameter("roomId", meetingId)//we will pass the token in the Headers
-        .build()
-        .getAsJSONObject(object : JSONObjectRequestListener {
-          override fun onResponse(response: JSONObject) {
-            try {
-              if (response.getBoolean("disabled")) {
-                Toast.makeText(
-                  this@MeetingActivity, "Room Deleted",
-                  Toast.LENGTH_SHORT
-                ).show()
-              } else {
-                Toast.makeText(
-                  this@MeetingActivity, "Room not Deleted",
-                  Toast.LENGTH_SHORT
-                ).show()
-              }
-            } catch (e: JSONException) {
-              e.printStackTrace()
-            }
-          }
-
-          override fun onError(anError: ANError) {
-            anError.printStackTrace()
-            Toast.makeText(
-              this@MeetingActivity, anError.message,
-              Toast.LENGTH_SHORT
-            ).show()
-          }
-        })
+      this@MeetingActivity.finish()
     }
-
-
 
 
     val rvParticipants = findViewById<RecyclerView>(R.id.rvParticipants)
@@ -114,54 +78,53 @@ class MeetingActivity : AppCompatActivity() {
 
   }
 
-  private fun getMeetingID(customId: String?) {
-    AndroidNetworking.get("https://api.videosdk.live/v2/rooms/${customId}")
-      .addHeaders("Authorization", token)
-      .build()
-      .getAsJSONObject(object : JSONObjectRequestListener {
-        override fun onResponse(response: JSONObject) {
-          meetingId = response.getString("roomId")
-          Log.e("pID",meetingId.toString())
-        }
+//  private fun getMeetingID(customId: String?) {
+//    AndroidNetworking.get("https://api.videosdk.live/v2/rooms/${customId}")
+//      .addHeaders("Authorization", token)
+//      .build()
+//      .getAsJSONObject(object : JSONObjectRequestListener {
+//        override fun onResponse(response: JSONObject) {
+//          meetingId = response.getString("roomId")
+//          Log.e("pID",meetingId.toString())
+//        }
+//
+//        override fun onError(anError: ANError) {
+//          anError.printStackTrace()
+//          Toast.makeText(
+//            this@MeetingActivity, anError.message,
+//            Toast.LENGTH_SHORT
+//          ).show()
+//        }
+//      })
+//  }
 
-        override fun onError(anError: ANError) {
-          anError.printStackTrace()
-          Toast.makeText(
-            this@MeetingActivity, anError.message,
-            Toast.LENGTH_SHORT
-          ).show()
-        }
-      })
-  }
-
-  private fun validateMeetingId(meetingId: String?) {
-
-    AndroidNetworking.get("https://api.videosdk.live/v2/rooms/${meetingId}")
-      .addHeaders("Authorization", token)
-      .build()
-      .getAsJSONObject(object : JSONObjectRequestListener {
-        override fun onResponse(response: JSONObject) {
-          if(response.getBoolean("disabled"))
-          {
-            Toast.makeText(
-              this@MeetingActivity, "Meeting is Already End !",
-              Toast.LENGTH_SHORT
-            ).show()
-            this@MeetingActivity.finish()
-          }
-
-        }
-
-        override fun onError(anError: ANError) {
-          anError.printStackTrace()
-          Toast.makeText(
-            this@MeetingActivity, anError.message,
-            Toast.LENGTH_SHORT
-          ).show()
-        }
-      })
-
-  }
+//  private fun validateMeetingId(meetingId: String?) {
+//    AndroidNetworking.get("https://api.videosdk.live/v2/rooms/${meetingId}")
+//      .addHeaders("Authorization", token)
+//      .build()
+//      .getAsJSONObject(object : JSONObjectRequestListener {
+//        override fun onResponse(response: JSONObject) {
+//          if(response.getBoolean("disabled"))
+//          {
+//            Toast.makeText(
+//              this@MeetingActivity, "Meeting is Already End !",
+//              Toast.LENGTH_SHORT
+//            ).show()
+//            this@MeetingActivity.finish()
+//          }
+//
+//        }
+//
+//        override fun onError(anError: ANError) {
+//          anError.printStackTrace()
+//          Toast.makeText(
+//            this@MeetingActivity, anError.message,
+//            Toast.LENGTH_SHORT
+//          ).show()
+//        }
+//      })
+//
+//  }
 
   // creating the MeetingEventListener
   private val meetingEventListener: MeetingEventListener = object : MeetingEventListener() {
@@ -230,6 +193,8 @@ class MeetingActivity : AppCompatActivity() {
     findViewById<View>(R.id.btnLeave).setOnClickListener { view: View? ->
       // this will make the local participant leave the meeting
       meeting!!.leave()
+      this@MeetingActivity.finish()
     }
+
   }
 }
